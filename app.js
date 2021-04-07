@@ -23,6 +23,7 @@ return {
 
 //sanhuutei ajillah controller
 var financeController = (function(){
+    //private fn
     var Income = function(id, description, value) {
         this.id = id;
         this.description = description;
@@ -50,22 +51,42 @@ var financeController = (function(){
       // console.log(incomes);
       
       // console.log(incomes[1].value)
-      
+     
+      //private data
       var data = {
-        allItems: {
+        Items: {
           inc: [],
           exp: []
         },
       
         totals: {
-          inc: 1000,
-          exp: 500
-        }
+          inc: 0,
+          exp: 0
+       
       }
-      
-      data.allItems.inc.push(i1);
-      
-      console.log(data.allItems.inc[0])
+    }
+    return {
+        addItem: function(type, desc, val){
+
+            var item, id;
+            //id=identifcation=todorhoildog huchin zuil; 
+            if(data.Items[type].length===0) id=1;
+            else{
+                data.Items[type][data.Items[type].length-1].id + 1;
+            }
+
+            if(type==="inc"){
+                item = new Income(id, desc, val);
+            }else{
+                item = new Expense(id, desc, val);
+            }
+            data.Items[type].push(item);
+        },
+        
+            seeData: function(){
+                return data;
+            }
+    }
 })();
 
 //programiin holbogch controller
@@ -74,9 +95,10 @@ var appController = (function(uiController, financeController){
 
     var ctrlAddItem=function() {
     //1. oruulah ugugdliig delgetsnees olj awna.
-    console.log(uiController.getInput()) ;
+    var input = uiController.getInput();
+    
     //2. olj awsan ugugluudee sanhuugiin controllert damjuulj tend hadgalna.
-
+        financeController.addItem(input.type, input.description, input.value);
     //3. olj awsan ugugdluugiig web deeree tohiroh hesegt gargana
 
     //4. tuswiig tootsoolno
