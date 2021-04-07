@@ -6,7 +6,11 @@ var DOMstrings = {
     inputValue: ".add__value",
     addBtn: ".add__btn",
     IncomeList: ".income__list",
-    ExpenseList: ".expenses__list"
+    ExpenseList: ".expenses__list",
+    tusuvLabel: ".budget__value",
+    incomeLabel: ".budget__income--value",
+    expenseLabel: ".budget__expenses--value",
+    percentageLabel: ".budget__expenses--percentage"
 };
 return {
     getInput: function(){
@@ -30,6 +34,26 @@ return {
             el.value="";
         });
         feildsArr[0].focus();
+    },
+
+    // return {
+    //     tusuv: data.tusuv,
+    //     huvi: data.huvi,
+    //     totalInc: data.totals.inc,
+    //     totalExp: data.totals.exp
+    // }
+
+    tusviigUzuuleh: function(tusuv){
+        document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
+        document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
+        document.querySelector(DOMstrings.expenseLabel).textContent = tusuv.totalExp;
+
+
+        if(tusuv.huvi !== 0){
+            document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi+"%";
+        }else{
+            document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
+        }
     },
 
     addListItem: function(item, type){
@@ -153,18 +177,19 @@ var appController = (function(uiController, financeController){
         input.description, 
         input.value
         );
- //3. olj awsan ugugdluugiig web deeree tohiroh hesegt gargana
-     uiController.addListItem(item, input.type);
-     uiController.clearFeilds();
- //4. tuswiig tootsoolno
+        //3. olj awsan ugugdluugiig web deeree tohiroh hesegt gargana
+        uiController.addListItem(item, input.type);
+        uiController.clearFeilds();
+        //4. tuswiig tootsoolno
         financeController.tusuvTootsooloh();
- //5.etsiin uldegdel, tootsoog delgetsend gargana
+        //5.etsiin uldegdel, tootsoog delgetsend gargana
         var tusuv = financeController.tusviigAvah();
 
         //6. Tusviin tootsoog delgetsend gargana
+        uiController.tusviigUzuuleh(tusuv);
     }
     
-    }
+    };
     var setupEventListener = function(){
     var DOM = uiController.getDOMstrings();
     document.querySelector(DOM.addBtn).addEventListener("click", function() {
@@ -180,6 +205,12 @@ document.addEventListener("keypress", function(event){
 return {
     init: function(){
         console.log("Application started...");
+        uiController.tusviigUzuuleh({
+            tusuv: 0,
+            huvi: 0,
+            totalInc: 0,
+            totalExp: 0
+        });
         setupEventListener();
     }
 }
