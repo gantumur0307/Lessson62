@@ -10,7 +10,8 @@ var DOMstrings = {
     tusuvLabel: ".budget__value",
     incomeLabel: ".budget__income--value",
     expenseLabel: ".budget__expenses--value",
-    percentageLabel: ".budget__expenses--percentage"
+    percentageLabel: ".budget__expenses--percentage",
+    containerDiv: ".container"
 };
 return {
     getInput: function(){
@@ -56,6 +57,11 @@ return {
         }
     },
 
+    deleteListItem: function(id){
+        var el = document.getElementById(id);
+        el.parentNode.removeChild(el);
+    },
+
     addListItem: function(item, type){
         // орлого зарлагын элементийг агуулсан html-ийг бэлтгэнэ
         var html, list;
@@ -63,11 +69,11 @@ return {
         if(type === 'inc'){
             list = DOMstrings.IncomeList;
             html =
-              '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__delete">            <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div>        </div></div>';
+              '<div class="item clearfix" id="inc-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__delete">            <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div>        </div></div>';
           } else {
             list = DOMstrings.ExpenseList;
             html =
-              '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div>          <div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn">                <i class="ion-ios-close-outline"></i></button></div></div></div>';
+              '<div class="item clearfix" id="exp-%id%"><div class="item__description">$$DESCRIPTION$$</div>          <div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn">                <i class="ion-ios-close-outline"></i></button></div></div></div>';
           }
         // ter HTML dotroo orlogo zarlaga utgiig REPLACE ashiglaj uurchilj ugnu
         html = html.replace('%id%', item.id);
@@ -141,6 +147,18 @@ var financeController = (function(){
             totalExp: data.totals.exp
         }
         },
+
+        deleteItem: function(type, id){
+            var ids = data.items[type].map(function(el){
+                return el.id;
+            })
+
+            var index = ids.indexOf(id);
+            if(index !== -1){
+                data.items[type].splice(index, 1);
+            }
+        },
+
         addItem: function(type, desc, val){
 
             var item, id;
@@ -194,6 +212,22 @@ var appController = (function(uiController, financeController){
     var DOM = uiController.getDOMstrings();
     document.querySelector(DOM.addBtn).addEventListener("click", function() {
         ctrlAddItem();
+});
+
+document.querySelector(DOM.containerDiv).addEventListener('click', function(event){
+    var id = event.target.parentNode.parentNode.parentNode.parentNode.id;
+    //income- 2
+    if(id){
+        var arr = id.split('-');
+        var type = arr[0];
+        var itemId = parseInt(arr[1]);
+
+        //1. sanhuugiin modulaas type, id ashiglaad ustgana.
+        financeController.deleteItem(type, itemId)
+        //2. delgets deer ene el-iig ustgana
+        uiController.deleteListItem(id);
+        //3. uldegdel tootsoog shinechilj haruulna
+    }
 });
 document.addEventListener("keypress", function(event){
     if(event.keyCode === 13 || event.which===13) {
